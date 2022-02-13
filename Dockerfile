@@ -1,26 +1,12 @@
-FROM arm64v8/debian:buster-slim
+FROM        node:17-buster-slim
 
-LABEL author="Kris Dookharan" maintainer="krisdookharan15@gmail.com"
+RUN         apt update \
+            && apt -y install ffmpeg iproute2 git sqlite3 python3 ca-certificates tzdata dnsutils build-essential \
+            && useradd -m -d /home/container container
 
-## add container user
-RUN useradd -m -d /home/container -s /bin/bash container
+USER        container
+ENV         USER=container HOME=/home/container
+WORKDIR     /home/container
 
-RUN ln -s /home/container/ /nonexistent
-
-ENV USER=container HOME=/home/container
-
-## update base packages
-RUN apt update \
- && apt upgrade -y
-
-## install dependencies
-RUN apt-get install -y ffmpeg iproute2 git sqlite3 python3 ca-certificates tzdata dnsutils build-essential locales proot
-
-## configure locale
-RUN update-locale lang=en_US.UTF-8 \
- && dpkg-reconfigure --frontend noninteractive locales
-
-WORKDIR /home/container
-
-COPY ./entrypoint.sh /entrypoint.sh
-CMD ["/bin/bash", "/entrypoint.sh"]
+COPY        ./entrypoint.sh /entrypoint.sh
+CMD         ["/bin/bash", "/entrypoint.sh"]
