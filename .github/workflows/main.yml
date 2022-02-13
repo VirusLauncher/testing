@@ -28,7 +28,6 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64/v8
           push: true
           tags: |
             viruslauncher/testing:latest
